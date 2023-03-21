@@ -1,9 +1,15 @@
 package rahulshettyacademy;
 
+import com.google.common.collect.ImmutableMap;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.options.UiAutomator2Options;
 import io.appium.java_client.service.local.AppiumDriverLocalService;
 import io.appium.java_client.service.local.AppiumServiceBuilder;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.RemoteWebElement;
+import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
@@ -28,6 +34,34 @@ public class BaseTest {
 
          driver = new AndroidDriver(new URL("http://127.0.0.1:4723"),options);
          driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+    }
+
+    public void longPressAction(WebElement ele){
+        ((JavascriptExecutor) driver).executeScript("mobile: longClickGesture",
+                ImmutableMap.of("elementId",((RemoteWebElement)ele).getId(),"duration",2000));
+    }
+
+    public void scrollToEndAction(){
+        boolean canScrollMore;
+        do {
+
+
+            canScrollMore = (Boolean) ((JavascriptExecutor) driver).executeScript("mobile: scrollGesture", ImmutableMap.of(
+                    "left", 100, "top", 100, "width", 200, "height", 200,
+                    "direction", "down",
+                    "percent", 3.0
+            ));
+        } while (canScrollMore);
+    }
+
+    public void swipeAction(WebElement ele,String direction){
+        Assert.assertEquals(driver.findElement(By.xpath("(//android.widget.ImageView)[1]")).getAttribute("focusable"),
+                "true");
+        ((JavascriptExecutor) driver).executeScript("mobile: swipeGesture", ImmutableMap.of(
+                "elementId",((RemoteWebElement)ele).getId(),
+                "direction", direction,
+                "percent", 0.75
+        ));
     }
     @AfterClass
     public void tearDown(){
